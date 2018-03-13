@@ -64,3 +64,14 @@ func GetDiffedIntersection(aI, bI interface{}) interface{} {
 	})
 	return resultV.Interface()
 }
+
+func MapToSlice(mI interface{}) interface{} {
+	m := reflect.ValueOf(mI)
+	keys := m.MapKeys()
+	slice := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(mI).Elem()), 0, 0)
+	for _, key := range keys {
+		item := m.MapIndex(key)
+		slice = reflect.Append(slice, item)
+	}
+	return slice.Interface()
+}
