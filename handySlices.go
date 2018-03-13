@@ -32,8 +32,8 @@ func wrapper(aI, bI interface{}, kernel func(aIE, bIE KeyStringValuer)) {
 
 func GetSubtraction(aI, bI interface{}) interface{} {
 	resultV := reflect.MakeSlice(reflect.ValueOf(aI).Type(), 0, 0)
-	wrapper(aI, bI, func(aIE, bIE KeyStringValuer){
-		if bI != nil {
+	wrapper(aI, bI, func(aIE, bIE KeyStringValuer) {
+		if bIE != nil {
 			return
 		}
 		resultV = reflect.Append(resultV, reflect.ValueOf(aIE))
@@ -43,8 +43,8 @@ func GetSubtraction(aI, bI interface{}) interface{} {
 
 func GetIntersection(aI, bI interface{}) interface{} {
 	resultV := reflect.MakeSlice(reflect.ValueOf(aI).Type(), 0, 0)
-	wrapper(aI, bI, func(aIE, bIE KeyStringValuer){
-		if bI == nil {
+	wrapper(aI, bI, func(aIE, bIE KeyStringValuer) {
+		if bIE == nil {
 			return
 		}
 		resultV = reflect.Append(resultV, reflect.ValueOf(aIE))
@@ -54,14 +54,13 @@ func GetIntersection(aI, bI interface{}) interface{} {
 
 func GetDiffedIntersection(aI, bI interface{}) interface{} {
 	resultV := reflect.MakeSlice(reflect.ValueOf(aI).Type(), 0, 0)
-	wrapper(aI, bI, func(aIE, bIE KeyStringValuer){
-		if bI == nil {
+	wrapper(aI, bI, func(aIE, bIE KeyStringValuer) {
+		if bIE == nil {
 			return
 		}
-		if !reflect.DeepEqual(aI, bI) {
+		if !reflect.DeepEqual(aIE, bIE) {
 			resultV = reflect.Append(resultV, reflect.ValueOf(aIE))
 		}
 	})
 	return resultV.Interface()
 }
-
