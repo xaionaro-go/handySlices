@@ -52,3 +52,16 @@ func GetIntersection(aI, bI interface{}) interface{} {
 	return resultV.Interface()
 }
 
+func GetDiffedIntersection(aI, bI interface{}) interface{} {
+	resultV := reflect.MakeSlice(reflect.ValueOf(aI).Type(), 0, 0)
+	wrapper(aI, bI, func(aIE, bIE KeyStringValuer){
+		if bI == nil {
+			return
+		}
+		if !reflect.DeepEqual(aI, bI) {
+			resultV = reflect.Append(resultV, reflect.ValueOf(aIE))
+		}
+	})
+	return resultV.Interface()
+}
+
