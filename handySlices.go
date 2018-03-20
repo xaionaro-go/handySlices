@@ -1,11 +1,15 @@
 package handySlices
 
 import (
+	"fmt"
 	"reflect"
 )
 
 type KeyStringValuer interface {
 	KeyStringValue() string
+}
+type IsEqualToIer interface {
+	IsEqualToI(compareTo IsEqualToIer) bool
 }
 
 func wrapper(aI, bI interface{}, kernel func(aIE, bIE KeyStringValuer)) {
@@ -58,7 +62,16 @@ func GetDiffedIntersection(aI, bI interface{}) interface{} {
 		if bIE == nil {
 			return
 		}
-		if !reflect.DeepEqual(aIE, bIE) {
+
+		isEqual := false
+		isEqualToIer, ok := aIE.(IsEqualToIer)
+		if ok {
+			isEqual = isEqualToIer.IsEqualToI(bIE.(IsEqualToIer))
+		} else {
+			isEqual = reflect.DeepEqual(aIE, bIE)
+		}
+
+		if !isEqual {
 			resultV = reflect.Append(resultV, reflect.ValueOf(aIE))
 		}
 	})
@@ -74,4 +87,46 @@ func MapToSlice(mI interface{}) interface{} {
 		slice = reflect.Append(slice, item)
 	}
 	return slice.Interface()
+}
+
+func valueStringOf(item interface{}) string {
+	return fmt.Sprintf("%v", item)
+}
+
+func IsEqualCollections(aI, bI interface{}) bool {
+	aV := reflect.ValueOf(aI)
+	bV := reflect.ValueOf(bI)
+	aL := aV.Len()
+	bL := bV.Len()
+
+	if aL != bL {
+		return false
+	}
+
+	isSetMapA := map[string]bool{}
+	for i := 0; i < aL; i++ {
+		aE := aV.Index(i)
+		aK := valueStringOf(aE.Interface())
+		isSetMapA[aK] = true
+	}
+
+	isSetMapB := map[string]bool{}
+	for i := 0; i < bL; i++ {
+		bE := bV.Index(i)
+		bK := valueStringOf(bE.Interface())
+		if !isSetMapA[bK] {
+			return false
+		}
+		isSetMapB[bK] = true
+	}
+
+	for i := 0; i < aL; i++ {
+		aE := aV.Index(i)
+		aK := valueStringOf(aE.Interface())
+		if !isSetMapB[aK] {
+			return false
+		}
+	}
+
+	return true
 }
