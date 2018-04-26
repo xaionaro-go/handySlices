@@ -54,6 +54,6 @@ func TestGetDiffedIntersection(t *testing.T) {
 	expect(t, r, []item{{"k2", 2}})
 }
 func TestMapToSlice(t *testing.T) {
-	r := MapToSlice(map[string]item{"k0":{"k0", 0}, "k1":{"k1", 1}}).([]item)
+	r := MapToSlice(map[string]item{"k0": {"k0", 0}, "k1": {"k1", 1}}).([]item)
 	expect(t, r, []item{{"k0", 0}, {"k1", 1}})
 }
